@@ -57,7 +57,8 @@ Channels are created or updated by PUTting a JSON configuration, for example:
 }
 ```
 
-An example, if this is running locally and accessed on localhost port 80:
+An example, if this is running locally and accessed on localhost port 80, which
+will set up archiving of our SCTE 35 demo livestream:
 
 ```bash
 # PUT new channel configuration
@@ -65,7 +66,7 @@ $ curl \
     -X PUT \
     -H 'Content-Type: application/json' \
     -d '{"channel_url": "https://demo.unified-streaming.com/k8s/live/scte35.isml", "chunk_duration": "PT5M", "s3_endpoint": "minio:9000", "s3_access_key": "minioadmin", "s3_secret_key": "minioadmin", "s3_bucket": "npvr-demo", "s3_region": "default", "archive_length": "P7D", "secure": false}' \
-    http://localhost/api/channel/<CHANNEL-NAME>
+    http://localhost/api/channel/scte35
 ```
 
 The Archiver should start creating jobs to archive the new channel.
