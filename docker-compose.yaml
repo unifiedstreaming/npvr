@@ -14,19 +14,19 @@ services:
       - ISM_URL=http://ism-proxy/ism/
 
   remix-proxy:
-    image: CACHE_DOCKER_HUB_IMAGE:latest
+    image: docker.io/unifiedstreaming/nginx-cache:latest
     environment:
       - NAME=remix-proxy
       - TARGET=remix
 
   ism-proxy:
-    image: CACHE_DOCKER_HUB_IMAGE:latest
+    image: docker.io/unifiedstreaming/nginx-cache:latest
     environment:
       - NAME=ism-proxy
       - TARGET=api
 
   remix:
-    image: REMIX_DOCKER_HUB_IMAGE:1.11.9
+    image: docker.io/unifiedstreaming/remix-origin:1.11.9
     environment:
       - UspLicenseKey
       - SMIL_URL=http://api/smil/
