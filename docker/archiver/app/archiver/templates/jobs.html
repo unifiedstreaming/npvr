@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Archiver jobs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('.static', filename='bootstrap.min.css') }}">
+  </head>
+  <body>
+    <div class="main">
+      <div class="container">
+        <div class="jumbotron">
+          <h1 class="display-4">Current archiver jobs</h1>
+          <p class="lead">All current archiver jobs from the past day</p>
+        </div>
+        {%- for job in jobs.values()|sort(reverse=True, attribute="start_timestamp") %}
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header {% if "capture_returncode" in job and job["capture_returncode"] > 0 %}bg-danger{% elif "capture_returncode" in job and job["capture_returncode"] == 0 %}bg-success{% else %}bg-light{% endif %}" data-toggle="collapse" data-target="#{{ job["id"] }}_details" aria-expanded="false" aria-controls="{{ job["id"] }}_details">
+                <div class="row">
+                  <div class="col-md-8">
+                    {{ job["chunk"] }}
+                  </div>
+                  <div class="col-md-4">
+                    {{ job["start_time"] }}
+                  </div>
+                </div>
+              </div>
+              <div class="collapse" id="{{ job["id"] }}_details">
+                <div class="card-body border-light">
+                  <pre>{{ job | pretty_json }}</pre>
+                  {% if "capture_log" in job %}
+                  <a href="{{ job["id"] }}/capture_log">View capture log</a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {%- endfor %}
+      </div>
+    </div>
+    <script src="{{ url_for('.static', filename='jquery-3.2.1.slim.min.js') }}"></script>
+    <script src="{{ url_for('.static', filename='popper.min.js') }}"></script>
+    <script src="{{ url_for('.static', filename='bootstrap.min.js') }}"></script>
+  </body>
+</html>

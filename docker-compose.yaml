@@ -1,0 +1,88 @@
+version: "3"
+services:
+  # Origin + Remix stack
+  origin:
+    image: docker.io/unifiedstreaming/npvr-origin:1.11.9
+    ports:
+      - 80:80
+    environment: 
+      - UspLicenseKey
+      - S3_URL=http://minio
+      - S3_REGION=default
+      - S3_ACCESS_KEY=minioadmin
+      - S3_SECRET_KEY=minioadmin
+      - ISM_URL=http://ism-proxy/ism/
+
+  remix-proxy:
+    image: CACHE_DOCKER_HUB_IMAGE:latest
+    environment:
+      - NAME=remix-proxy
+      - TARGET=remix
+
+  ism-proxy:
+    image: CACHE_DOCKER_HUB_IMAGE:latest
+    environment:
+      - NAME=ism-proxy
+      - TARGET=api
+
+  remix:
+    image: REMIX_DOCKER_HUB_IMAGE:1.11.9
+    environment:
+      - UspLicenseKey
+      - SMIL_URL=http://api/smil/
+      - S3_URL=http://minio
+      - S3_REGION=default
+      - S3_ACCESS_KEY=minioadmin
+      - S3_SECRET_KEY=minioadmin
+  
+  # nPVR archiver
+  api:
+    image: docker.io/unifiedstreaming/npvr-archiver:1.11.9
+    environment:
+      - UspLicenseKey
+      - REMIX_URL=http://remix-proxy
+      - CELERY_RESULT_BACKEND=redis://redis
+      - CELERY_BROKER_URL=pyamqp://guest@rabbitmq
+    command: ["gunicorn", "-b", "0.0.0.0:80", "--log-level", "info", "--access-logfile", "-", "-w", "8", "archiver:app"]
+  
+  worker:
+    image: docker.io/unifiedstreaming/npvr-archiver:1.11.9
+    environment:
+      - UspLicenseKey
+      - CELERY_RESULT_BACKEND=redis://redis
+      - CELERY_BROKER_URL=pyamqp://guest@rabbitmq
+    command: ["celery", "-A", "archiver.celery", "worker", "-l", "info"]
+
+  beat:
+    image: docker.io/unifiedstreaming/npvr-archiver:1.11.9
+    environment:
+      - UspLicenseKey
+      - CELERY_RESULT_BACKEND=redis://redis
+      - CELERY_BROKER_URL=pyamqp://guest@rabbitmq
+    command: ["celery", "-A", "archiver.celery", "beat", "-l", "info"]
+
+  # core infrastructure bits
+  redis:
+    image: redis:4
+    ports:
+      - 6379:6379
+
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - 15672:15672
+      - 5672:5672
+
+  flower:
+    image: mher/flower
+    command: ["celery", "--broker=amqp://guest:guest@rabbitmq:5672//", "flower"]
+    ports:
+      - 5555:5555
+
+  # minio storage server
+  minio:
+    image: minio/minio
+    ports:
+      - 9000:9000
+      - 9001:9001
+    command: ["server", "/data", "--console-address", ":9001"]

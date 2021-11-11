@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Capture log</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('.static', filename='bootstrap.min.css') }}">
+</head>
+
+<body>
+    <div class="main">
+        <div class="container">
+            <div class="jumbotron">
+                <h1 class="display-4">Capture error log</h1>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            STDERR
+                        </div>
+                        <div class="card-body border-light">
+                            <pre>{{ capture["stderr"] }}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('.static', filename='bootstrap.min.js') }}"></script>
+</body>
+
+</html>

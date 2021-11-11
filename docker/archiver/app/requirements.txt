@@ -1,0 +1,14 @@
+automodinit
+celery
+kombu
+Flask
+flask-cors
+flasgger
+isodate
+lxml
+minio
+requests
+redis
+gunicorn
+
+-e .
