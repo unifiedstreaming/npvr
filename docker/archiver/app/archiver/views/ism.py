@@ -35,7 +35,7 @@ def get_ism(channel, remix):
         channel_config["s3_region"],
         "-o",
         ism_file_path,
-        remix_url
+        remix_url,
     ]
 
     x = subprocess.run(

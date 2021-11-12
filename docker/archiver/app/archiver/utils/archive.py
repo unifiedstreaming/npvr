@@ -12,11 +12,13 @@ class Archive(object):
         s3_access_key,
         s3_secret_key,
         s3_bucket,
-        secure=True
+        secure=True,
     ):
         self.minio_client = Minio(
-            s3_endpoint, access_key=s3_access_key, secret_key=s3_secret_key,
-            secure=secure
+            s3_endpoint,
+            access_key=s3_access_key,
+            secret_key=s3_secret_key,
+            secure=secure,
         )
         self.bucket = s3_bucket
         if not self.minio_client.bucket_exists(self.bucket):

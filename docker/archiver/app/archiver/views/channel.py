@@ -165,7 +165,7 @@ def put_channel(channel_name):
             "s3_access_key",
             "s3_secret_key",
             "s3_region",
-            "secure"
+            "secure",
         ]:
             if field not in request_json:
                 missing_fields.append(field)
@@ -193,7 +193,7 @@ def put_channel(channel_name):
                 "s3_access_key",
                 "s3_secret_key",
                 "s3_region",
-                "secure"
+                "secure",
             ]
         }
 

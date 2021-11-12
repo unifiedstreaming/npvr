@@ -1,8 +1,8 @@
-from flask import Blueprint, Flask
+from flask import Blueprint, Flask, request
 from flask_cors import CORS
 from os import environ
 from celery import Celery
-from flasgger import Swagger
+from flasgger import Swagger, LazyString, LazyJSONEncoder
 import json
 from archiver.utils import state_backend
 
@@ -14,9 +14,6 @@ app.config.from_object("archiver.config.default")
 if "APP_CONFIG" in environ:
     app.config.from_envvar("APP_CONFIG")
 CORS(app)
-
-# swagger stuffs
-swagger = Swagger(app)
 
 
 # pretty print json filter for jinja
@@ -99,3 +96,12 @@ class ReverseProxied(object):
 
 
 app.wsgi_app = ReverseProxied(app.wsgi_app)
+
+# swagger stuffs
+app.json_encoder = LazyJSONEncoder
+template = dict(
+    swaggerUiPrefix=LazyString(
+        lambda: request.environ.get("SCRIPT_NAME", "")
+    )
+)
+swagger = Swagger(app, template=template)
