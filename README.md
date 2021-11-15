@@ -1,13 +1,11 @@
 # Remix nPVR archiver
-POC for nPVR Archiver.
+This is a demo and proof-of-concept for an nPVR Archiver.
 
 Can manage archives for multiple channels, initiating Unified Capture jobs to
 make a permanent archive from a live channel.
 
 This is provided as-is, it is not supported or designed for running in a
 production setup.
-
-
 
 
 ## Supported features
@@ -37,6 +35,9 @@ and the management API will be at ``http://<address>/api/``.
 API docs can be viewed at ``http://<address>/api/apidocs``.
 
 ### Configure channels
+
+Note: this demo does not include a live stream to use as a source, if you do
+not already have one available you can either run our [live demo](https://github.com/unifiedstreaming/live-demo-cmaf) yourself, or use our [hosted live stream](https://demo.unified-streaming.com/k8s/live/scte35.isml).
 
 Channels can be configured using the REST API. The API specification can be
 seen at `http://<address>/api/apidocs/`
@@ -93,12 +94,14 @@ The POC has the following components:
 
 * [redis](https://redis.io/): data store for job states, results, etc.
 * [rabbitmq](https://www.rabbitmq.com): message broker for task queues
+* [flower](https://flower.readthedocs.io/) monitoring tool for visibility of Celery
 * worker: archiver application running a Celery worker
 * beat: triggers scheduled Celery tasks
 * api: Flask based API & web UI
 * origin: Unified Origin for just-in-time packaging
 * remix: Remix origin for playlist processing
 * remix-proxy: nginx caching proxy for Remix outputs
+* ism-proxy: nginx caching proxy for server manifests
 * minio: S3 compatible storage server to store archive
 
 The `worker`, `beat` and `api` Docker containers are all based on the Archiver
@@ -132,7 +135,7 @@ RabbitMQ is used as a message broker, Redis is used for persistent storage of
 task results, job status, Unified Capture logs and more.
 
 The Celery task queues can be monitored using Flower, which is available on
-`http://<HOST>:5555/`.
+`http://<address>:5555/`.
 
 
 ## Playback
@@ -140,11 +143,11 @@ The Celery task queues can be monitored using Flower, which is available on
 The API has a SMIL generation endpoint which creates playlists based on a time
 range in the request URL.
 
-This is available at `http://<HOST>:81/smil/<CHANNEL>/<START>--<END>.smil`
+This is available at `http://<address>/api/smil/<CHANNEL>/<START>--<END>.smil`
 
 For example:
 ```bash
-$ curl http://192.168.1.114:81/smil/scte35/2019-07-08T06:00:00Z--2019-07-08T06:04:30Z.smil
+$ curl http://localhost/api/smil/scte35/2019-07-08T06:00:00Z--2019-07-08T06:04:30Z.smil
 ```
 
 ```xml
@@ -176,13 +179,13 @@ approximately 1 second per hour of content in the playlist, depending on
 the exact content and network and storage I/O.
 
 Origin playback URLs are like so:
-* HLS: `http://<HOST>/<CHANNEL>/<START>--<END>.ism/.m3u8`
-* DASH: `http://<HOST>/<CHANNEL>/<START>--<END>.ism/.mpd`
+* HLS: `http://<address>/ism/<CHANNEL>/<START>--<END>.ism/.m3u8`
+* DASH: `http://<address>/ism/<CHANNEL>/<START>--<END>.ism/.mpd`
 
 For example:
 
 ```bash
-$ curl http://192.168.1.114/scte35/2019-07-08T06:00:00Z--2019-07-08T06:04:30Z.ism/.m3u8
+$ curl http://localhost/ism/scte35/2019-07-08T06:00:00Z--2019-07-08T06:04:30Z.ism/.m3u8
 ```
 ```
 #EXTM3U
