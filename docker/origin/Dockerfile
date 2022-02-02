@@ -1,4 +1,4 @@
-ARG UPSTREAM_DOCKER_IMAGE=docker.io/unifiedstreaming/origin:1.11.9
+ARG UPSTREAM_DOCKER_IMAGE=docker.io/unifiedstreaming/origin:1.11.12
 
 FROM $UPSTREAM_DOCKER_IMAGE
 
