@@ -2,7 +2,7 @@ version: "3"
 services:
   # Origin + Remix stack
   origin:
-    image: docker.io/unifiedstreaming/npvr-origin:1.11.12
+    image: docker.io/unifiedstreaming/npvr-origin:1.11.14
     ports:
       - 80:80
     environment: 
@@ -26,7 +26,7 @@ services:
       - TARGET=api
 
   remix:
-    image: docker.io/unifiedstreaming/remix-origin:1.11.12
+    image: docker.io/unifiedstreaming/remix-origin:1.11.14
     environment:
       - UspLicenseKey
       - SMIL_URL=http://api/smil/
@@ -37,7 +37,7 @@ services:
   
   # nPVR archiver
   api:
-    image: docker.io/unifiedstreaming/npvr-archiver:1.11.12
+    image: docker.io/unifiedstreaming/npvr-archiver:1.11.14
     environment:
       - UspLicenseKey
       - REMIX_URL=http://remix-proxy
@@ -46,7 +46,7 @@ services:
     command: ["gunicorn", "-b", "0.0.0.0:80", "--log-level", "info", "--access-logfile", "-", "-w", "8", "archiver:app"]
   
   worker:
-    image: docker.io/unifiedstreaming/npvr-archiver:1.11.12
+    image: docker.io/unifiedstreaming/npvr-archiver:1.11.14
     environment:
       - UspLicenseKey
       - CELERY_RESULT_BACKEND=redis://redis
@@ -54,7 +54,7 @@ services:
     command: ["celery", "-A", "archiver.celery", "worker", "-l", "info"]
 
   beat:
-    image: docker.io/unifiedstreaming/npvr-archiver:1.11.12
+    image: docker.io/unifiedstreaming/npvr-archiver:1.11.14
     environment:
       - UspLicenseKey
       - CELERY_RESULT_BACKEND=redis://redis
