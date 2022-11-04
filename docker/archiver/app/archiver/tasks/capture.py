@@ -111,6 +111,10 @@ def capture(job):
         )
     else:
         job["stages"]["capture"] = "failed"
+        if os.path.exists(job["capture_file_path"]):
+            os.remove(job["capture_file_path"])
+        if os.path.exists(os.path.dirname(job["capture_file_path"])):
+            os.rmdir(os.path.dirname(job["capture_file_path"]))
 
     # mark chunk as available
     job["stages"]["mark_chunk_not_in_progress"] = "starting"

@@ -1,4 +1,4 @@
-from collections import MutableSequence
+from collections.abc import MutableSequence
 from datetime import datetime
 from isodate import parse_datetime
 from lxml import etree
