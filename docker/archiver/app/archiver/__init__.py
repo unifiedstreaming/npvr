@@ -5,6 +5,8 @@ from celery import Celery
 from flasgger import Swagger, LazyString, LazyJSONEncoder
 import json
 from archiver.utils import state_backend
+from uuid import UUID
+from datetime import datetime
 
 
 app = Flask(__name__, static_folder=None)
@@ -16,9 +18,20 @@ if "APP_CONFIG" in environ:
 CORS(app)
 
 
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, obj):  # pylint:disable=arguments-differ
+        if isinstance(obj, UUID):
+            return str(obj) # <- notice I'm not returning obj.hex as the original answer
+        if isinstance(obj, datetime):
+            return obj.isoformat().replace("+00:00", "Z")
+        return json.JSONEncoder.default(self, obj)
+
+app.json_encoder = CustomJSONEncoder
+
+
 # pretty print json filter for jinja
 def pretty_json(value):
-    return json.dumps(value, indent=2)
+    return json.dumps(value, indent=2, cls=CustomJSONEncoder)
 
 
 app.jinja_env.filters["pretty_json"] = pretty_json
@@ -97,11 +110,12 @@ class ReverseProxied(object):
 
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 
+
 # swagger stuffs
-app.json_encoder = LazyJSONEncoder
-template = dict(
-    swaggerUiPrefix=LazyString(
-        lambda: request.environ.get("SCRIPT_NAME", "")
-    )
-)
-swagger = Swagger(app, template=template)
+# app.json_encoder = LazyJSONEncoder
+# template = dict(
+#     swaggerUiPrefix=LazyString(
+#         lambda: request.environ.get("SCRIPT_NAME", "")
+#     )
+# )
+# swagger = Swagger(app, template=template)

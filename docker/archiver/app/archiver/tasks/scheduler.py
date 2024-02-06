@@ -74,7 +74,7 @@ def check_channel_archive(channel, config):
                     "secure": config["secure"],
                     "stages": {},
                 }
-
+                logger.info(f"job before task create {job}")
                 capture_task = capture.capture.s(job).apply_async()
 
                 capture_tasks.append(repr(capture_task))

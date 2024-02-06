@@ -25,9 +25,9 @@ def capture(job):
     job["stages"]["mark_chunk_in_progress"] = "starting"
     state.set_job_state(job)
 
-    date = isodate.parse_datetime(job["start"]).strftime("%Y-%m-%d")
+    date = job["start"].strftime("%Y-%m-%d")
     chunk = "{0}/{1}/{2}--{3}.ismv".format(
-        job["channel_name"], date, job["start"], job["end"]
+        job["channel_name"], date, job["start"].isoformat().replace("+00:00", "Z"), job["end"].isoformat().replace("+00:00", "Z")
     )
     job["chunk"] = chunk
 
@@ -50,7 +50,7 @@ def capture(job):
 
     meta_filter = 'filter=(type!="meta")'
     capture_url = "{0}/.mpd?vbegin={1}&vend={2}&{3}".format(
-        job["channel_url"], job["start"], job["end"], meta_filter
+        job["channel_url"], job["start"].isoformat().replace("+00:00", "Z"), job["end"].isoformat().replace("+00:00", "Z"), meta_filter
     )
 
     capture_path = tempfile.mkdtemp()
@@ -76,10 +76,10 @@ def capture(job):
     )
     job["capture_returncode"] = x.returncode
     job["capture_log"] = state.set_capture_log(x.stderr)
+    job["capture_file_path"] = capture_file_path
 
     # if capture succeeded then do s3 upload
     if x.returncode == 0:
-        job["capture_file_path"] = capture_file_path
         job["stages"]["capture"] = "done"
         job["stages"]["s3_put"] = "starting"
         state.set_job_state(job)
@@ -106,7 +106,7 @@ def capture(job):
 
         state.mark_chunk_complete(
             job["channel_name"],
-            isodate.parse_datetime(job["start"]).timestamp(),
+            job["start"].timestamp(),
             job["chunk"],
         )
     else:

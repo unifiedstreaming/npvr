@@ -7,7 +7,7 @@ from datetime import datetime
 from archiver import archiver_api, state
 from archiver.utils.smil import SMIL, SMILItem
 from flask import make_response
-from isodate import parse_datetime, parse_duration, tzinfo
+from isodate import parse_duration, tzinfo
 
 
 EPOCH = datetime(1970, 1, 1, tzinfo=tzinfo.UTC)
@@ -53,8 +53,8 @@ def timerange_smil(channel, start, end):
                     schema:
                         $ref: '#/definitions/smil'
     """
-    start = parse_datetime(start)
-    end = parse_datetime(end)
+    start = datetime.fromisoformat(start)
+    end = datetime.fromisoformat(end)
 
     return smil(channel, start, end)
 

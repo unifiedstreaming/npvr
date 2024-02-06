@@ -28,8 +28,8 @@ class PubPoint(object):
         for c in self.archive.findall(".//{*}video/{*}c"):
             video_ranges.append(
                 {
-                    "start": isodate.parse_datetime(c.attrib["start"]),
-                    "end": isodate.parse_datetime(c.attrib["end"]),
+                    "start": datetime.fromisoformat(c.attrib["start"]),
+                    "end": datetime.fromisoformat(c.attrib["end"]),
                 }
             )
         return video_ranges

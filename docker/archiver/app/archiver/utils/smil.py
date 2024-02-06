@@ -1,6 +1,5 @@
 from collections.abc import MutableSequence
 from datetime import datetime
-from isodate import parse_datetime
 from lxml import etree
 
 
@@ -107,7 +106,7 @@ class SMILItem(object):
             self._begin = begin
         else:
             try:
-                self._begin = parse_datetime(begin)
+                self._begin = datetime.fromisoformat(begin)
             except Exception:
                 raise TypeError("begin should be a datetime")
 
@@ -121,7 +120,7 @@ class SMILItem(object):
             self._end = end
         else:
             try:
-                self._end = parse_datetime(end)
+                self._end = datetime.fromisoformat(end)
             except Exception:
                 raise TypeError("end should be a datetime")
 

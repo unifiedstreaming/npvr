@@ -31,9 +31,9 @@ class Archive(object):
         """
         # convert string input to datetime
         if isinstance(start, str):
-            start = isodate.parse_datetime(start)
+            start = datetime.fromisoformat(start)
         if isinstance(end, str):
-            end = isodate.parse_datetime(end)
+            end = datetime.fromisoformat(end)
 
         date = start.strftime("%Y-%m-%d")
         start_str = start.isoformat().replace("+00:00", "Z")
