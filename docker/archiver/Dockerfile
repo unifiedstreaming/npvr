@@ -1,33 +1,20 @@
-ARG UPSTREAM_DOCKER_IMAGE=docker.io/unifiedstreaming/origin:1.13.0
+ARG UPSTREAM_DOCKER_IMAGE=docker.io/unifiedstreaming/origin:1.15.1
 
 FROM $UPSTREAM_DOCKER_IMAGE
 
-# Remove Origin and other things we don't want
-RUN apk add py3-pip \
-&&  apk del \
-    apache2 \
-    apache2-proxy \
-    mod_smooth_streaming \
-    mod_unified_s3_auth \
-    manifest-edit
+# install py3-lxml
+RUN apk add py3-pip py3-lxml python3
 
-# install python and libxml stuff
-RUN apk --update add --virtual .build-deps \
-        gcc \
-        musl-dev \
-        python3-dev \
-&&  apk add \
-        libxml2-dev \
-        libxslt-dev \
-&&  pip3 install lxml \
-&&  apk del .build-deps \
-&&  rm -f /var/cache/apk/*
 
 COPY app/ /app
 
 RUN cd /app \
+&&  python -m venv /usr/local/venvs/npvr \
+&&  source /usr/local/venvs/npvr/bin/activate \
 &&  pip3 install -r requirements.txt
 
+ENV VIRTUAL_ENV=/usr/local/venvs/npvr
+ENV PATH=${VIRTUAL_ENV}/bin:${PATH}
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
