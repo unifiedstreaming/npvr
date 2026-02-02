@@ -1,4 +1,3 @@
-automodinit
 celery
 kombu
 Flask
