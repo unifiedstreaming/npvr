@@ -67,7 +67,7 @@ services:
       - 6379:6379
 
   rabbitmq:
-    image: rabbitmq:management
+    image: rabbitmq:4.2-management
     ports:
       - 15672:15672
       - 5672:5672
